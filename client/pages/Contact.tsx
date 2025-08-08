@@ -9,15 +9,17 @@ export default function Contact() {
   const [formData, setFormData] = useState({
     name: "",
     email: "",
-    message: ""
+    message: "",
   });
   const [isLoading, setIsLoading] = useState(false);
   const { toast } = useToast();
 
-  const handleChange = (e: React.ChangeEvent<HTMLInputElement | HTMLTextAreaElement>) => {
+  const handleChange = (
+    e: React.ChangeEvent<HTMLInputElement | HTMLTextAreaElement>,
+  ) => {
     setFormData({
       ...formData,
-      [e.target.name]: e.target.value
+      [e.target.name]: e.target.value,
     });
   };
 
@@ -27,22 +29,23 @@ export default function Contact() {
 
     try {
       const formDataToSend = new FormData();
-      formDataToSend.append('name', formData.name);
-      formDataToSend.append('email', formData.email);
-      formDataToSend.append('message', formData.message);
+      formDataToSend.append("name", formData.name);
+      formDataToSend.append("email", formData.email);
+      formDataToSend.append("message", formData.message);
 
-      const response = await fetch('/contact.php', {
-        method: 'POST',
-        body: formDataToSend
+      const response = await fetch("/contact.php", {
+        method: "POST",
+        body: formDataToSend,
       });
 
       const result = await response.text();
 
-      if (result.includes('correctamente')) {
+      if (result.includes("correctamente")) {
         toast({
           title: "Mensaje enviado",
-          description: "Tu mensaje ha sido enviado correctamente. Te contactaremos pronto.",
-          variant: "default"
+          description:
+            "Tu mensaje ha sido enviado correctamente. Te contactaremos pronto.",
+          variant: "default",
         });
         setFormData({ name: "", email: "", message: "" });
       } else {
@@ -51,8 +54,9 @@ export default function Contact() {
     } catch (error) {
       toast({
         title: "Error",
-        description: "Hubo un problema al enviar tu mensaje. Por favor, inténtalo de nuevo.",
-        variant: "destructive"
+        description:
+          "Hubo un problema al enviar tu mensaje. Por favor, inténtalo de nuevo.",
+        variant: "destructive",
       });
     } finally {
       setIsLoading(false);
@@ -71,9 +75,15 @@ export default function Contact() {
           </p>
         </div>
 
-        <form onSubmit={handleSubmit} className="space-y-6 bg-white p-8 rounded-lg shadow-lg">
+        <form
+          onSubmit={handleSubmit}
+          className="space-y-6 bg-white p-8 rounded-lg shadow-lg"
+        >
           <div>
-            <label htmlFor="name" className="block text-sm font-medium text-gray-700 mb-2">
+            <label
+              htmlFor="name"
+              className="block text-sm font-medium text-gray-700 mb-2"
+            >
               Nombre *
             </label>
             <Input
@@ -89,7 +99,10 @@ export default function Contact() {
           </div>
 
           <div>
-            <label htmlFor="email" className="block text-sm font-medium text-gray-700 mb-2">
+            <label
+              htmlFor="email"
+              className="block text-sm font-medium text-gray-700 mb-2"
+            >
               Email *
             </label>
             <Input
@@ -105,7 +118,10 @@ export default function Contact() {
           </div>
 
           <div>
-            <label htmlFor="message" className="block text-sm font-medium text-gray-700 mb-2">
+            <label
+              htmlFor="message"
+              className="block text-sm font-medium text-gray-700 mb-2"
+            >
               Mensaje *
             </label>
             <Textarea

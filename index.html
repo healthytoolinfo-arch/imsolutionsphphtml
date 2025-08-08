@@ -1265,45 +1265,49 @@
           e.preventDefault();
 
           const formData = new FormData(this);
-          const submitBtn = this.querySelector('.submit-btn');
+          const submitBtn = this.querySelector(".submit-btn");
           const originalText = submitBtn.textContent;
 
           // Mostrar estado de carga
-          submitBtn.textContent = 'Enviando...';
+          submitBtn.textContent = "Enviando...";
           submitBtn.disabled = true;
 
-          fetch('/api/contact', {
-            method: 'POST',
+          fetch("/api/contact", {
+            method: "POST",
             headers: {
-              'Content-Type': 'application/json',
+              "Content-Type": "application/json",
             },
             body: JSON.stringify({
-              name: formData.get('name'),
-              email: formData.get('email'),
-              message: formData.get('message')
+              name: formData.get("name"),
+              email: formData.get("email"),
+              message: formData.get("message"),
+            }),
+          })
+            .then((response) => response.json())
+            .then((result) => {
+              submitBtn.textContent = originalText;
+              submitBtn.disabled = false;
+
+              if (result.success) {
+                document.getElementById("successMessage").classList.add("show");
+                this.reset();
+
+                setTimeout(() => {
+                  document
+                    .getElementById("successMessage")
+                    .classList.remove("show");
+                }, 5000);
+              } else {
+                alert("Error: " + result.message);
+              }
             })
-          })
-          .then(response => response.json())
-          .then(result => {
-            submitBtn.textContent = originalText;
-            submitBtn.disabled = false;
-
-            if (result.success) {
-              document.getElementById("successMessage").classList.add("show");
-              this.reset();
-
-              setTimeout(() => {
-                document.getElementById("successMessage").classList.remove("show");
-              }, 5000);
-            } else {
-              alert('Error: ' + result.message);
-            }
-          })
-          .catch(error => {
-            submitBtn.textContent = originalText;
-            submitBtn.disabled = false;
-            alert('Error al enviar el mensaje. Por favor, inténtalo de nuevo.');
-          });
+            .catch((error) => {
+              submitBtn.textContent = originalText;
+              submitBtn.disabled = false;
+              alert(
+                "Error al enviar el mensaje. Por favor, inténtalo de nuevo.",
+              );
+            });
         });
 
       // Language selector
@@ -1316,6 +1320,5 @@
         }
       }
     </script>
-
-</body>
+  </body>
 </html>
