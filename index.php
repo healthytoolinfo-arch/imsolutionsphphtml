@@ -715,7 +715,7 @@
         }
 
         .hero-button {
-          width: auto;
+          width: 100%;
         }
 
         .section {
