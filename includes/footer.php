@@ -183,9 +183,9 @@
             <p class="footer-subtitle">Made with ❤️ by Ivelina & Mario</p>
           </div>
           <div class="footer-links">
-            <a href="privacy-policy.html" style="color:#fff;">Privacy Policy</a>
+            <a href="privacy-policy.php" style="color:#fff;">Privacy Policy</a>
             <span class="separator" style="color:#fff;">•</span>
-            <a href="terms-of-service.html" style="color:#fff;">Terms of Service</a>
+            <a href="terms-of-service.php" style="color:#fff;">Terms of Service</a>
           </div>
         </div>
       </div>
