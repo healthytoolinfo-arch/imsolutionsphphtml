@@ -1264,6 +1264,40 @@
         .getElementById("contactForm")
         .addEventListener("submit", function (e) {
           e.preventDefault();
+
+          const formData = new FormData(this);
+          const submitBtn = this.querySelector('.submit-btn');
+          const originalText = submitBtn.textContent;
+
+          // Mostrar estado de carga
+          submitBtn.textContent = 'Enviando...';
+          submitBtn.disabled = true;
+
+          fetch('contact.php', {
+            method: 'POST',
+            body: formData
+          })
+          .then(response => response.text())
+          .then(result => {
+            submitBtn.textContent = originalText;
+            submitBtn.disabled = false;
+
+            if (result.includes('correctamente')) {
+              document.getElementById("successMessage").classList.add("show");
+              this.reset();
+
+              setTimeout(() => {
+                document.getElementById("successMessage").classList.remove("show");
+              }, 5000);
+            } else {
+              alert('Error: ' + result);
+            }
+          })
+          .catch(error => {
+            submitBtn.textContent = originalText;
+            submitBtn.disabled = false;
+            alert('Error al enviar el mensaje. Por favor, inténtalo de nuevo.');
+          });
         });
 
       // Language selector
@@ -1276,41 +1310,6 @@
         }
       }
     </script>
-  
-<!-- EmailJS integration -->
-<script type="text/javascript" src="https://cdn.emailjs.com/dist/email.min.js"></script>
-<script type="text/javascript">
-  (function () {
-    emailjs.init("Li-IsF_Rv_SW6GEY0");
-  })();
-
-  document
-    .getElementById("contactForm")
-    .addEventListener("submit", function (e) {
-      e.preventDefault();
-
-      // Rellenar campo oculto con la hora actual en español
-      document.getElementById("time").value = new Date().toLocaleString("es-ES");
-
-      emailjs
-        .sendForm("service_9yatyia", "template_ta16eku", this)
-        .then(
-          function () {
-            document.getElementById("successMessage").classList.add("show");
-            document.getElementById("contactForm").reset();
-
-            setTimeout(() => {
-              document
-                .getElementById("successMessage")
-                .classList.remove("show");
-            }, 5000);
-          },
-          function (error) {
-            alert("Oops... algo salió mal: " + error.text);
-          }
-        );
-    });
-</script>
 
 </body>
 </html>
