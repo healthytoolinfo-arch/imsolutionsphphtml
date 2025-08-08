@@ -1273,7 +1273,10 @@
           submitBtn.disabled = true;
 
           // Detectar si estamos en desarrollo (Vite) o producción (PHP hosting)
-          const isDevelopment = window.location.port === '8080' || window.location.hostname === 'localhost';
+          const isDevelopment = window.location.hostname.includes('fly.dev') ||
+                               window.location.port === '8080' ||
+                               window.location.hostname === 'localhost' ||
+                               window.location.hostname.includes('127.0.0.1');
 
           if (isDevelopment) {
             // Usar Node.js/Express endpoint en desarrollo
