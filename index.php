@@ -1102,22 +1102,46 @@
         .addEventListener("submit", function (e) {
           e.preventDefault();
 
-          // Simulate form submission
           const formData = new FormData(this);
+          const submitBtn = this.querySelector('.submit-btn');
+          const originalText = submitBtn.textContent;
 
-          // Here you would normally send the data to your PHP script
-          // For demo purposes, we'll just show the success message
+          // Mostrar estado de carga
+          submitBtn.textContent = 'Enviando...';
+          submitBtn.disabled = true;
 
-          // Show success message
-          document.getElementById("successMessage").classList.add("show");
+          fetch('/api/contact', {
+            method: 'POST',
+            headers: {
+              'Content-Type': 'application/json',
+            },
+            body: JSON.stringify({
+              name: formData.get('name'),
+              email: formData.get('email'),
+              message: formData.get('message')
+            })
+          })
+          .then(response => response.json())
+          .then(result => {
+            submitBtn.textContent = originalText;
+            submitBtn.disabled = false;
 
-          // Reset form
-          this.reset();
+            if (result.success) {
+              document.getElementById("successMessage").classList.add("show");
+              this.reset();
 
-          // Hide success message after 5 seconds
-          setTimeout(() => {
-            document.getElementById("successMessage").classList.remove("show");
-          }, 5000);
+              setTimeout(() => {
+                document.getElementById("successMessage").classList.remove("show");
+              }, 5000);
+            } else {
+              alert('Error: ' + result.message);
+            }
+          })
+          .catch(error => {
+            submitBtn.textContent = originalText;
+            submitBtn.disabled = false;
+            alert('Error al enviar el mensaje. Por favor, inténtalo de nuevo.');
+          });
         });
 
       // Language selector

@@ -235,24 +235,6 @@
         opacity: 0.7;
       }
 
-      /* Mobile menu active states */
-      .mobile-menu nav a.active {
-        color: #1d1d1b;
-        font-weight: bold;
-        position: relative;
-      }
-
-      .mobile-menu nav a.active::after {
-        content: "";
-        position: absolute;
-        left: 0;
-        right: 0;
-        bottom: -6px;
-        height: 2px;
-        background-color: #1d1d1b;
-        border-radius: 1px;
-      }
-
       /* Hero Section */
       .hero {
         padding: 32px 0 64px;
@@ -928,13 +910,13 @@
     <section class="hero">
       <div class="container">
         <div class="hero-content">
-          <div class="hero-text">
+          <div class="hero-text scroll-reveal-left">
             <h1>Because everything starts with believing you are</h1>
             <button class="hero-button" onclick="scrollToContact()">
               Contact us
             </button>
           </div>
-          <div class="hero-image">
+          <div class="hero-image scroll-reveal-right">
             <img
               src="https://api.builder.io/api/v1/image/assets/TEMP/93d315aebea6a8e9e9bdc432166000cacd20da5a?width=730"
               alt="Team i'm solutions - Ivelina and Mario working on digital solutions and innovative app development"
@@ -947,15 +929,15 @@
     <!-- Projects Section -->
     <section class="section" id="projects">
       <div class="container">
-        <h2>Projects</h2>
+        <h2 class="scroll-reveal">Projects</h2>
         <div class="section-content">
-          <div class="section-image">
+          <div class="section-image scroll-reveal-left">
             <img
               src="https://api.builder.io/api/v1/image/assets/TEMP/8c88cb14f21cc79d7ba01a2959492cda992dff51?width=740"
               alt="Digital platform for nutritionists - innovative app development for nutrition professionals"
             />
           </div>
-          <div class="section-text">
+          <div class="section-text scroll-reveal-right">
             <h3 style="font-size: 24px; margin-bottom: 16px">
               Digital platform for nutritionists (under development)
             </h3>
@@ -968,7 +950,7 @@
             <p>Project in progress. More details coming soon.</p>
           </div>
         </div>
-        <div class="projects-second-image">
+        <div class="projects-second-image scroll-reveal-scale">
           <img
             src="https://api.builder.io/api/v1/image/assets/TEMP/43a4cc21b9779f7054a0d9407909f77c321c11ad?width=740"
             alt="Nutrition app interface design - user-friendly tool for nutritionist workflow and client management"
@@ -1296,7 +1278,7 @@
 
         if (element) {
           const elementPosition = element.offsetTop;
-          const offsetPosition = elementPosition - headerHeight - 20; // 20px extra margin
+          const offsetPosition = elementPosition - headerHeight - 20;
 
           window.scrollTo({
             top: offsetPosition,
@@ -1325,58 +1307,49 @@
         btn.classList.remove("active");
       }
 
-      // Active section highlighting for both desktop and mobile
-      window.addEventListener("scroll", function () {
-        const sections = ["projects", "about", "contact"];
-        const desktopNavLinks = document.querySelectorAll(".desktop-nav a");
-        const mobileNavLinks = document.querySelectorAll(".mobile-menu nav a");
-        const header = document.querySelector(".header");
-        const headerHeight = header ? header.offsetHeight : 80;
-
-        sections.forEach((sectionId) => {
-          const section = document.getElementById(sectionId);
-          const desktopNavLink = document.querySelector(
-            `.desktop-nav a[href="#${sectionId}"]`,
-          );
-          const mobileNavLink = document.querySelector(
-            `.mobile-menu nav a[href="#${sectionId}"]`,
-          );
-
-          if (section && (desktopNavLink || mobileNavLink)) {
-            const rect = section.getBoundingClientRect();
-            const threshold = headerHeight + 50;
-
-            if (rect.top <= threshold && rect.bottom >= threshold) {
-              // Remove active from all links
-              desktopNavLinks.forEach((link) =>
-                link.classList.remove("active"),
-              );
-              mobileNavLinks.forEach((link) => link.classList.remove("active"));
-
-              // Add active to current section links
-              if (desktopNavLink) desktopNavLink.classList.add("active");
-              if (mobileNavLink) mobileNavLink.classList.add("active");
-            }
-          }
-        });
-
-        // Remove active if we're at the top
-        if (window.scrollY < 100) {
-          desktopNavLinks.forEach((link) => link.classList.remove("active"));
-          mobileNavLinks.forEach((link) => link.classList.remove("active"));
-        }
-      });
-
-      // Handle clicks on mobile menu links
+      // Form submission handling for PHP hosting
       document
-        .querySelectorAll('.mobile-menu nav a[href^="#"]')
-        .forEach((link) => {
-          link.addEventListener("click", function () {
-            document
-              .querySelectorAll(".mobile-menu nav a")
-              .forEach((l) => l.classList.remove("active"));
-            this.classList.add("active");
-          });
+        .getElementById("contactForm")
+        .addEventListener("submit", function (e) {
+          e.preventDefault();
+
+          const formData = new FormData(this);
+          const submitBtn = this.querySelector(".submit-btn");
+          const originalText = submitBtn.textContent;
+
+          // Mostrar estado de carga
+          submitBtn.textContent = "Enviando...";
+          submitBtn.disabled = true;
+
+          fetch("contact.php", {
+            method: "POST",
+            body: formData,
+          })
+            .then((response) => response.text())
+            .then((result) => {
+              submitBtn.textContent = originalText;
+              submitBtn.disabled = false;
+
+              if (result.includes("correctamente")) {
+                document.getElementById("successMessage").classList.add("show");
+                this.reset();
+
+                setTimeout(() => {
+                  document
+                    .getElementById("successMessage")
+                    .classList.remove("show");
+                }, 5000);
+              } else {
+                alert("Error: " + result);
+              }
+            })
+            .catch((error) => {
+              submitBtn.textContent = originalText;
+              submitBtn.disabled = false;
+              alert(
+                "Error al enviar el mensaje. Por favor, inténtalo de nuevo.",
+              );
+            });
         });
 
       // Scroll Reveal Animation
@@ -1405,69 +1378,6 @@
           observer.observe(element);
         });
       });
-
-      // Form submission handling
-      document
-        .getElementById("contactForm")
-        .addEventListener("submit", function (e) {
-          e.preventDefault();
-
-          const formData = new FormData(this);
-          const submitBtn = this.querySelector(".submit-btn");
-          const originalText = submitBtn.textContent;
-
-          // Mostrar estado de carga
-          submitBtn.textContent = "Enviando...";
-          submitBtn.disabled = true;
-
-          // En entorno Vite siempre usar Node.js endpoint
-          fetch("/api/contact", {
-            method: "POST",
-            headers: {
-              "Content-Type": "application/json",
-            },
-            body: JSON.stringify({
-              name: formData.get("name"),
-              email: formData.get("email"),
-              message: formData.get("message"),
-            }),
-          })
-            .then((response) => response.json())
-            .then((result) => {
-              submitBtn.textContent = originalText;
-              submitBtn.disabled = false;
-
-              if (result.success) {
-                document.getElementById("successMessage").classList.add("show");
-                this.reset();
-
-                setTimeout(() => {
-                  document
-                    .getElementById("successMessage")
-                    .classList.remove("show");
-                }, 5000);
-              } else {
-                alert("Error: " + result.message);
-              }
-            })
-            .catch((error) => {
-              submitBtn.textContent = originalText;
-              submitBtn.disabled = false;
-              alert(
-                "Error al enviar el mensaje. Por favor, inténtalo de nuevo.",
-              );
-            });
-        });
-
-      // Language selector
-      function changeLanguage(lang) {
-        // This would redirect to different language versions
-        if (lang === "en") {
-          window.location.href = "index-en.html";
-        } else if (lang === "bg") {
-          window.location.href = "index-bg.html";
-        }
-      }
     </script>
   </body>
 </html>
