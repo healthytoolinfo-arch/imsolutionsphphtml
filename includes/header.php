@@ -35,6 +35,7 @@
 
           <!-- Desktop Navigation -->
           <nav class="desktop-nav">
+            
             <a href="#projects" onclick="scrollToSection('projects')"
               >Projects</a
             >
@@ -61,4 +62,39 @@
           </nav>
         </div>
       </div>
+
+     <!-- script selection desktop -->
+     <script>
+document.addEventListener("DOMContentLoaded", function () {
+  const sections = document.querySelectorAll("section[id]");
+  const navLinks = document.querySelectorAll('nav a[href^="#"]');
+
+  function clearActive() {
+    navLinks.forEach(link => link.classList.remove("active"));
+  }
+
+  const observer = new IntersectionObserver(entries => {
+    entries.forEach(entry => {
+      if (entry.isIntersecting) {
+        const id = entry.target.getAttribute("id");
+        clearActive();
+        const activeLink = document.querySelector(`nav a[href="#${id}"]`);
+        if (activeLink) activeLink.classList.add("active");
+      }
+    });
+  }, {
+    root: null,
+    threshold: 0.6
+  });
+
+  sections.forEach(section => observer.observe(section));
+
+  // Aquí añadimos el control para el scroll top (hero)
+  window.addEventListener('scroll', () => {
+    if (window.scrollY < 100) {
+      clearActive();
+    }
+  });
+});
+</script>
     </header>
