@@ -262,8 +262,8 @@
 
       .hero-button {
         width: 100%;
-        max-width: 320px;
-        padding: 16px 32px;
+        max-width: 400px;
+        padding: 20px 48px;
         background-color: #1d1d1b;
         color: white;
         border: none;
@@ -288,7 +288,7 @@
       .hero-image img {
         width: 100%;
         height: auto;
-        max-width: 400px;
+        max-width: 500px;
         border-radius: 16px;
       }
 
@@ -391,6 +391,11 @@
         .projects-second-image {
           display: flex;
           justify-content: center;
+        }
+
+        .hero-button {
+          width: 100%;
+          max-width: none;
         }
       }
 
@@ -644,6 +649,10 @@
           width: auto;
         }
 
+        .hero-image img {
+          max-width: 700px;
+        }
+
         .section {
           padding: 128px 0;
         }
@@ -684,10 +693,33 @@
           max-width: 600px;
         }
 
-        /* Desktop: Contact layout */
+        /* Desktop: Contact layout - form left, image right centered */
         #contact .section-content {
+          flex-direction: row;
+          align-items: center;
+          justify-content: space-between;
+          gap: 64px;
+        }
+
+        .contact-form {
+          order: 1;
+          flex: 1;
+          max-width: 500px;
+          margin: 0;
+        }
+
+        .contact-image {
+          order: 2;
+          flex: 1;
+          display: flex;
+          align-items: center;
           justify-content: center;
-          align-items: flex-start;
+          height: 100%;
+        }
+
+        .contact-image img {
+          max-width: 450px;
+          margin: 0 auto;
         }
 
         .submit-btn {
@@ -1011,7 +1043,7 @@
                   required
                 ></textarea>
               </div>
-              <button type="submit" class="submit-btn">Contact us</button>
+              <button type="submit" class="submit-btn">Send message</button>
               <div id="successMessage" class="success-message">
                 <strong>Message sent successfully! 🎉</strong><br />
                 Thank you for contacting us! We'll get back to you soon.
