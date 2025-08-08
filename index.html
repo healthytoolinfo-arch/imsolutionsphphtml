@@ -1284,25 +1284,12 @@
               message: formData.get("message"),
             }),
           })
-            .then((response) => {
-              if (isDevelopment) {
-                return response.json();
-              } else {
-                return response.text();
-              }
-            })
+            .then((response) => response.json())
             .then((result) => {
               submitBtn.textContent = originalText;
               submitBtn.disabled = false;
 
-              let success = false;
-              if (isDevelopment) {
-                success = result.success;
-              } else {
-                success = result.includes('correctamente');
-              }
-
-              if (success) {
+              if (result.success) {
                 document.getElementById("successMessage").classList.add("show");
                 this.reset();
 
@@ -1312,8 +1299,7 @@
                     .classList.remove("show");
                 }, 5000);
               } else {
-                const errorMsg = isDevelopment ? result.message : result;
-                alert("Error: " + errorMsg);
+                alert("Error: " + result.message);
               }
             })
             .catch((error) => {
