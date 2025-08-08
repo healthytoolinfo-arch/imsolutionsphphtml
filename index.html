@@ -1295,12 +1295,25 @@
               body: formData
             })
           }
-            .then((response) => response.json())
+            .then((response) => {
+              if (isDevelopment) {
+                return response.json();
+              } else {
+                return response.text();
+              }
+            })
             .then((result) => {
               submitBtn.textContent = originalText;
               submitBtn.disabled = false;
 
-              if (result.success) {
+              let success = false;
+              if (isDevelopment) {
+                success = result.success;
+              } else {
+                success = result.includes('correctamente');
+              }
+
+              if (success) {
                 document.getElementById("successMessage").classList.add("show");
                 this.reset();
 
@@ -1310,7 +1323,8 @@
                     .classList.remove("show");
                 }, 5000);
               } else {
-                alert("Error: " + result.message);
+                const errorMsg = isDevelopment ? result.message : result;
+                alert("Error: " + errorMsg);
               }
             })
             .catch((error) => {
