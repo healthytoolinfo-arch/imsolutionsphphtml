@@ -41,7 +41,7 @@ export const handleContact: RequestHandler = async (req, res) => {
     }
 
     // Configurar transporter SMTP de Hostinger
-    const transporter = nodemailer.createTransporter({
+    const transporter = nodemailer.createTransport({
       host: "smtp.hostinger.com",
       port: 465,
       secure: true, // SSL
