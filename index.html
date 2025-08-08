@@ -1272,17 +1272,29 @@
           submitBtn.textContent = "Enviando...";
           submitBtn.disabled = true;
 
-          fetch("/api/contact", {
-            method: "POST",
-            headers: {
-              "Content-Type": "application/json",
-            },
-            body: JSON.stringify({
-              name: formData.get("name"),
-              email: formData.get("email"),
-              message: formData.get("message"),
-            }),
-          })
+          // Detectar si estamos en desarrollo (Vite) o producción (PHP hosting)
+          const isDevelopment = window.location.port === '8080' || window.location.hostname === 'localhost';
+
+          if (isDevelopment) {
+            // Usar Node.js/Express endpoint en desarrollo
+            fetch("/api/contact", {
+              method: "POST",
+              headers: {
+                "Content-Type": "application/json",
+              },
+              body: JSON.stringify({
+                name: formData.get("name"),
+                email: formData.get("email"),
+                message: formData.get("message"),
+              }),
+            })
+          } else {
+            // Usar PHP endpoint en producción
+            fetch("contact.php", {
+              method: "POST",
+              body: formData
+            })
+          }
             .then((response) => response.json())
             .then((result) => {
               submitBtn.textContent = originalText;
