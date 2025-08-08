@@ -1110,16 +1110,23 @@
           submitBtn.textContent = 'Enviando...';
           submitBtn.disabled = true;
 
-          fetch('contact.php', {
+          fetch('/api/contact', {
             method: 'POST',
-            body: formData
+            headers: {
+              'Content-Type': 'application/json',
+            },
+            body: JSON.stringify({
+              name: formData.get('name'),
+              email: formData.get('email'),
+              message: formData.get('message')
+            })
           })
-          .then(response => response.text())
+          .then(response => response.json())
           .then(result => {
             submitBtn.textContent = originalText;
             submitBtn.disabled = false;
 
-            if (result.includes('correctamente')) {
+            if (result.success) {
               document.getElementById("successMessage").classList.add("show");
               this.reset();
 
@@ -1127,7 +1134,7 @@
                 document.getElementById("successMessage").classList.remove("show");
               }, 5000);
             } else {
-              alert('Error: ' + result);
+              alert('Error: ' + result.message);
             }
           })
           .catch(error => {
