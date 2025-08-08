@@ -711,10 +711,33 @@
           max-width: 600px;
         }
 
-        /* Desktop: Contact layout */
+        /* Desktop: Contact layout - form left, image right centered */
         #contact .section-content {
+          flex-direction: row;
+          align-items: center;
+          justify-content: space-between;
+          gap: 64px;
+        }
+
+        .contact-form {
+          order: 1;
+          flex: 1;
+          max-width: 500px;
+          margin: 0;
+        }
+
+        .contact-image {
+          order: 2;
+          flex: 1;
+          display: flex;
+          align-items: center;
           justify-content: center;
-          align-items: flex-start;
+          height: 100%;
+        }
+
+        .contact-image img {
+          max-width: 450px;
+          margin: 0 auto;
         }
 
         .submit-btn {
