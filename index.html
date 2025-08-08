@@ -1272,32 +1272,18 @@
           submitBtn.textContent = "Enviando...";
           submitBtn.disabled = true;
 
-          // Detectar si estamos en desarrollo (Vite) o producción (PHP hosting)
-          const isDevelopment = window.location.hostname.includes('fly.dev') ||
-                               window.location.port === '8080' ||
-                               window.location.hostname === 'localhost' ||
-                               window.location.hostname.includes('127.0.0.1');
-
-          if (isDevelopment) {
-            // Usar Node.js/Express endpoint en desarrollo
-            fetch("/api/contact", {
-              method: "POST",
-              headers: {
-                "Content-Type": "application/json",
-              },
-              body: JSON.stringify({
-                name: formData.get("name"),
-                email: formData.get("email"),
-                message: formData.get("message"),
-              }),
-            })
-          } else {
-            // Usar PHP endpoint en producción
-            fetch("contact.php", {
-              method: "POST",
-              body: formData
-            })
-          }
+          // En entorno Vite siempre usar Node.js endpoint
+          fetch("/api/contact", {
+            method: "POST",
+            headers: {
+              "Content-Type": "application/json",
+            },
+            body: JSON.stringify({
+              name: formData.get("name"),
+              email: formData.get("email"),
+              message: formData.get("message"),
+            }),
+          })
             .then((response) => {
               if (isDevelopment) {
                 return response.json();
