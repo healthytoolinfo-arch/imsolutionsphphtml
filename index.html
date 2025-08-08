@@ -1224,32 +1224,48 @@
         btn.classList.remove("active");
       }
 
-      // Active section highlighting
+      // Active section highlighting for both desktop and mobile
       window.addEventListener("scroll", function () {
         const sections = ["projects", "about", "contact"];
-        const navLinks = document.querySelectorAll("nav a");
+        const desktopNavLinks = document.querySelectorAll(".desktop-nav a");
+        const mobileNavLinks = document.querySelectorAll(".mobile-menu nav a");
         const header = document.querySelector(".header");
         const headerHeight = header ? header.offsetHeight : 80;
 
         sections.forEach((sectionId) => {
           const section = document.getElementById(sectionId);
-          const navLink = document.querySelector(`nav a[href="#${sectionId}"]`);
+          const desktopNavLink = document.querySelector(`.desktop-nav a[href="#${sectionId}"]`);
+          const mobileNavLink = document.querySelector(`.mobile-menu nav a[href="#${sectionId}"]`);
 
-          if (section && navLink) {
+          if (section && (desktopNavLink || mobileNavLink)) {
             const rect = section.getBoundingClientRect();
             const threshold = headerHeight + 50;
 
             if (rect.top <= threshold && rect.bottom >= threshold) {
-              navLinks.forEach((link) => link.classList.remove("active"));
-              navLink.classList.add("active");
+              // Remove active from all links
+              desktopNavLinks.forEach((link) => link.classList.remove("active"));
+              mobileNavLinks.forEach((link) => link.classList.remove("active"));
+
+              // Add active to current section links
+              if (desktopNavLink) desktopNavLink.classList.add("active");
+              if (mobileNavLink) mobileNavLink.classList.add("active");
             }
           }
         });
 
         // Remove active if we're at the top
         if (window.scrollY < 100) {
-          navLinks.forEach((link) => link.classList.remove("active"));
+          desktopNavLinks.forEach((link) => link.classList.remove("active"));
+          mobileNavLinks.forEach((link) => link.classList.remove("active"));
         }
+      });
+
+      // Handle clicks on mobile menu links
+      document.querySelectorAll('.mobile-menu nav a[href^="#"]').forEach(link => {
+        link.addEventListener('click', function() {
+          document.querySelectorAll('.mobile-menu nav a').forEach(l => l.classList.remove('active'));
+          this.classList.add('active');
+        });
       });
 
       // Form submission handling
