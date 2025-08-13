@@ -1,93 +1,67 @@
 <?php
 use PHPMailer\PHPMailer\PHPMailer;
 use PHPMailer\PHPMailer\Exception;
-use PHPMailer\PHPMailer\SMTP;
 
-// Configuración de seguridad
-header('Content-Type: text/plain; charset=utf-8');
-error_reporting(E_ALL);
-ini_set('display_errors', 1);
-
-// Solo permitir método POST
-if ($_SERVER['REQUEST_METHOD'] !== 'POST') {
-    http_response_code(405);
-    exit("❌ Método no permitido");
-}
-
-// Cargar PHPMailer
-require 'phpmailer/PHPMailer.php';
-require 'phpmailer/Exception.php';
-require 'phpmailer/SMTP.php';
-
-// Configuración SMTP
-$smtpConfig = [
+// 1. Configuración básica
+$SMTP_CONFIG = [
     'host' => 'smtp.hostinger.com',
     'port' => 587,
     'secure' => 'tls',
     'username' => 'hello@imsolutions.studio',
-    'password' => 'Ive+mariothebest1!', // ACTUALIZAR ESTA CONTRASEÑA
+    'password' => 'TuContraseñaReal', // ACTUALIZAR
     'from' => 'hello@imsolutions.studio',
-    'from_name' => 'Formulario Web',
     'to' => 'hello@imsolutions.studio'
 ];
 
-// Sanitizar entradas
-$name = filter_input(INPUT_POST, 'name', FILTER_SANITIZE_STRING) ?? '';
-$email = filter_input(INPUT_POST, 'email', FILTER_SANITIZE_EMAIL) ?? '';
-$message = filter_input(INPUT_POST, 'message', FILTER_SANITIZE_STRING) ?? '';
+// 2. Cargar PHPMailer con archivos corregidos
+require 'phpmailer/PHPMailer.php';
+require 'phpmailer/Exception.php';
+require 'phpmailer/SMTP.php';  // ¡Ahora con implementación real!
 
-// Validaciones
-$errors = [];
-if (empty($name)) $errors[] = "Nombre requerido";
-if (empty($email) || !filter_var($email, FILTER_VALIDATE_EMAIL)) $errors[] = "Email inválido";
-if (empty($message)) $errors[] = "Mensaje requerido";
-
-if (!empty($errors)) {
-    http_response_code(400);
-    exit("❌ " . implode("\n", $errors));
-}
-
-try {
-    $mail = new PHPMailer(true);
+if ($_SERVER["REQUEST_METHOD"] == "POST") {
+    $name = htmlspecialchars($_POST['name']);
+    $email = filter_var($_POST['email'], FILTER_SANITIZE_EMAIL);
+    $message = htmlspecialchars($_POST['message']);
     
-    // Configuración SMTP
-    $mail->isSMTP();
-    $mail->Host = $smtpConfig['host'];
-    $mail->Port = $smtpConfig['port'];
-    $mail->SMTPAuth = true;
-    $mail->Username = $smtpConfig['username'];
-    $mail->Password = $smtpConfig['password'];
-    $mail->SMTPSecure = $smtpConfig['secure'];
-    $mail->CharSet = 'UTF-8';
-    
-    // Habilitar depuración completa
-    $mail->SMTPDebug = SMTP::DEBUG_LOWLEVEL; // Nivel máximo de depuración
-    
-    // Configurar remitente y destinatario
-    $mail->setFrom($smtpConfig['from'], $smtpConfig['from_name']);
-    $mail->addAddress($smtpConfig['to']);
-    $mail->addReplyTo($email, $name);
-    
-    // Contenido del mensaje
-    $mail->isHTML(false);
-    $mail->Subject = "Nuevo mensaje de $name";
-    $mail->Body = "Nombre: $name\nEmail: $email\n\nMensaje:\n$message";
-    
-    // Intento de envío
-    $mail->send();
-    
-    // Si llegamos aquí, el envío fue exitoso
-    echo "✅ Mensaje enviado correctamente";
-} catch (Exception $e) {
-    // Registrar error detallado
-    $errorMsg = "Error PHPMailer: " . $e->getMessage();
-    
-    if (isset($mail) && !empty($mail->ErrorInfo)) {
-        $errorMsg .= "\nDetalles SMTP: " . $mail->ErrorInfo;
+    // 3. Validación
+    if (empty($name) || empty($email) || empty($message)) {
+        http_response_code(400);
+        exit("❌ Todos los campos son requeridos");
     }
     
-    error_log("[".date('Y-m-d H:i:s')."] $errorMsg");
-    http_response_code(500);
-    exit("❌ Error en el servidor: " . $e->getMessage());
+    try {
+        $mail = new PHPMailer(true);
+        
+        // 4. Configuración SMTP con archivos corregidos
+        $mail->isSMTP();
+        $mail->Host = $SMTP_CONFIG['host'];
+        $mail->Port = $SMTP_CONFIG['port'];
+        $mail->SMTPAuth = true;
+        $mail->Username = $SMTP_CONFIG['username'];
+        $mail->Password = $SMTP_CONFIG['password'];
+        $mail->SMTPSecure = $SMTP_CONFIG['secure'];
+        
+        // 5. Configuración del mensaje
+        $mail->setFrom($SMTP_CONFIG['from'], 'Formulario Web');
+        $mail->addAddress($SMTP_CONFIG['to']);
+        $mail->addReplyTo($email, $name);
+        $mail->Subject = "Nuevo mensaje de $name";
+        $mail->Body = "Nombre: $name\nEmail: $email\n\nMensaje:\n$message";
+        
+        // 6. Intento de envío
+        if ($mail->send()) {
+            echo "✅ Mensaje enviado correctamente";
+        } else {
+            error_log("Error SMTP: " . $mail->ErrorInfo);
+            echo "❌ Error al enviar: " . $mail->ErrorInfo;
+        }
+    } catch (Exception $e) {
+        error_log("Excepción: " . $e->getMessage());
+        http_response_code(500);
+        echo "❌ Error crítico: " . $e->getMessage();
+    }
+} else {
+    http_response_code(405);
+    echo "Método no permitido";
 }
 ?>
