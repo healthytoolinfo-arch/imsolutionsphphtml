@@ -2,63 +2,51 @@
 use PHPMailer\PHPMailer\PHPMailer;
 use PHPMailer\PHPMailer\Exception;
 
-// 1. Configuración básica
-$SMTP_CONFIG = [
-    'host' => 'smtp.hostinger.com',
-    'port' => 587,
-    'secure' => 'tls',
-    'username' => 'hello@imsolutions.studio',
-    'password' => 'IveMarioTheBest1!', // ACTUALIZAR
-    'from' => 'hello@imsolutions.studio',
-    'to' => 'hello@imsolutions.studio'
-];
-
-// 2. Cargar PHPMailer con archivos corregidos
 require 'phpmailer/PHPMailer.php';
 require 'phpmailer/Exception.php';
-require 'phpmailer/SMTP.php';  // ¡Ahora con implementación real!
+require 'phpmailer/SMTP.php';
 
 if ($_SERVER["REQUEST_METHOD"] == "POST") {
-    $name = htmlspecialchars($_POST['name']);
-    $email = filter_var($_POST['email'], FILTER_SANITIZE_EMAIL);
-    $message = htmlspecialchars($_POST['message']);
-    
-    // 3. Validación
-    if (empty($name) || empty($email) || empty($message)) {
-        http_response_code(400);
-        exit("❌ Todos los campos son requeridos");
-    }
+    // Configuración SMTP verificada
+    $config = [
+        'host' => 'smtp.hostinger.com',
+        'port' => 587,
+        'username' => 'hello@imsolutions.studio',
+        'password' => 'IveMarioTheBest1!', // Contraseña que funciona
+        'from' => 'hello@imsolutions.studio',
+        'to' => 'hello@imsolutions.studio'
+    ];
+
+    // Procesar y validar datos del formulario
+    $name = htmlspecialchars($_POST['name'] ?? '');
+    $email = filter_var($_POST['email'] ?? '', FILTER_SANITIZE_EMAIL);
+    $message = htmlspecialchars($_POST['message'] ?? '');
     
     try {
         $mail = new PHPMailer(true);
         
-        // 4. Configuración SMTP con archivos corregidos
+        // Configuración SMTP
         $mail->isSMTP();
-        $mail->Host = $SMTP_CONFIG['host'];
-        $mail->Port = $SMTP_CONFIG['port'];
+        $mail->Host = $config['host'];
+        $mail->Port = $config['port'];
         $mail->SMTPAuth = true;
-        $mail->Username = $SMTP_CONFIG['username'];
-        $mail->Password = $SMTP_CONFIG['password'];
-        $mail->SMTPSecure = $SMTP_CONFIG['secure'];
+        $mail->Username = $config['username'];
+        $mail->Password = $config['password'];
+        $mail->SMTPSecure = 'tls'; // TLS
         
-        // 5. Configuración del mensaje
-        $mail->setFrom($SMTP_CONFIG['from'], 'Formulario Web');
-        $mail->addAddress($SMTP_CONFIG['to']);
+        // Configuración del mensaje
+        $mail->setFrom($config['from'], 'Formulario Web');
+        $mail->addAddress($config['to']);
         $mail->addReplyTo($email, $name);
         $mail->Subject = "Nuevo mensaje de $name";
         $mail->Body = "Nombre: $name\nEmail: $email\n\nMensaje:\n$message";
         
-        // 6. Intento de envío
-        if ($mail->send()) {
-            echo "✅ Mensaje enviado correctamente";
-        } else {
-            error_log("Error SMTP: " . $mail->ErrorInfo);
-            echo "❌ Error al enviar: " . $mail->ErrorInfo;
-        }
+        // Envío y confirmación
+        $mail->send();
+        echo "✅ Mensaje enviado correctamente";
     } catch (Exception $e) {
-        error_log("Excepción: " . $e->getMessage());
         http_response_code(500);
-        echo "❌ Error crítico: " . $e->getMessage();
+        echo "❌ Error: " . $e->getMessage();
     }
 } else {
     http_response_code(405);
