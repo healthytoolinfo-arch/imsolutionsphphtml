@@ -8,7 +8,7 @@ $SMTP_CONFIG = [
     'port' => 587,
     'secure' => 'tls',
     'username' => 'hello@imsolutions.studio',
-    'password' => 'TuContraseñaReal', // ACTUALIZAR
+    'password' => 'IveMarioTheBest1!', // ACTUALIZAR
     'from' => 'hello@imsolutions.studio',
     'to' => 'hello@imsolutions.studio'
 ];

@@ -31,7 +31,7 @@ try {
     }
     
     // 5. Autenticación
-    if (!$smtp->authenticate('hello@imsolutions.studio', 'TuContraseñaReal')) {
+    if (!$smtp->authenticate('hello@imsolutions.studio', 'IveMarioTheBest1!')) {
         throw new Exception("Autenticación fallida: " . $smtp->getError()['error']);
     }
     
